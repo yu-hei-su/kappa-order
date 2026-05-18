@@ -1,5 +1,7 @@
 id,name,price,image
 1,まぐろ（赤身）,150,/images/maguro.jpg
 2,いくら,180,/images/ikura.jpg
-3,活〆はまち,150,/images/hamachi.png
-8,厚焼き玉子,100,/images/tamago.png
+3,サーモン,140,/images/salmon.jpg
+4,たまご,120,/images/tamago.jpg
+5,えび,120,/images/ebi.jpg
+6,いか,120,/images/ika.jpg

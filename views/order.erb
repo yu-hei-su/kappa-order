@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/kappastyle.css">
+  <title>注文画面</title>
+</head>
+<body>
+  <h1><%= @av[:icon] %> <%= @av[:name] %>さんの注文</h1>
+  <h3 style="text-align: center;">現在の合計: <%= @my_total %>円</h3>
+  <hr>
+
+  <form action="/order" method="POST">
+    <input type="hidden" name="group_id" value="<%= @group_id %>">
+    <input type="hidden" name="avatar_id" value="<%= @avatar_id %>">
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; justify-content: center;">
+      <% @products.each do |id, p| %>
+        <label style="border: 2px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; width: 130px; background-color: #fff;">
+          <img src="<%= p[:image] %>" width="110" height="110" style="border-radius: 5px; display: block; margin: 0 auto 10px;" alt="画像">
+          <input type="radio" name="product_id" value="<%= id %>" required> 
+          <strong><%= p[:name] %></strong><br>
+          <span style="color: #c0392b;"><%= p[:price] %>円</span>
+        </label>
+      <% end %>
+    </div>
+
+    <button type="submit">注文する！</button>
+  </form>
+
+  <hr>
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="/group/<%= @group_id %>/summary" class="pc-button" style="display: inline-block; margin-bottom: 10px;">お会計まとめを見る</a><br>
+    <a href="/group/<%= @group_id %>">アバター選択に戻る</a>
+  </div>
+</body>
+</html>

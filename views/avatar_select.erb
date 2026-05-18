@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/kappastyle.css">
+  <title>アバターを選択</title>
+</head>
+<body>
+  <div class="box">
+    <h1>誰が注文しますか？</h1>
+    <% @avatars.each do |id, data| %>
+      <a href="/group/<%= @group_id %>/avatar/<%= id %>" class="avatar-card">
+        <%= data[:icon] %> <%= data[:name] %>
+      </a>
+    <% end %>
+  </div>
+</body>
+</html>

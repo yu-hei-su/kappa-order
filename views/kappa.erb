@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/kappastyle.css">
+  <title>かっぱオーダー</title>
+</head>
+<body>
+  <div class="box">
+    <h1>かっぱ寿司</h1>
+    <div class="qr-box">
+      <p>スマホからのご注文はこちら👇</p>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<%= @qr_url %>" alt="QRコード">
+    </div>
+    <a href="/group/kappa_table" class="pc-button">PC・タブレット用 注文画面へ</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/kappastyle.css">
+  <title>お会計まとめ</title>
+</head>
+<body>
+  <h1>お会計まとめ</h1>
+  <div class="item">
+    <ul>
+      <% grand_total = 0 %>
+      <% @avatars.each do |id, av| %>
+        <% items = @table_orders[id] || [] %>
+        <% sum = 0 %>
+        <% items.each { |pid| sum += @products[pid][:price] if @products[pid] } %>
+        <% grand_total += sum %>
+        <li style="font-size: 18px; margin-bottom: 10px;">
+          <%= av[:icon] %> <%= av[:name] %>: <strong><%= sum %>円</strong>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+  
+  <h2 style="text-align: center; color: #e60012;">総合計: <%= grand_total %>円</h2>
+  
+  <div style="text-align: center; margin-top: 20px;">
+    <button onclick="history.back();" style="width: auto; padding: 10px 40px;">戻る</button>
+  </div>
+</body>
+</html>
