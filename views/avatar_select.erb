@@ -8,12 +8,19 @@
 </head>
 <body>
   <div class="box">
-    <h1>誰が注文しますか？</h1>
+    <h1><%= @table_id %>番テーブル</h1>
+    <p style="text-align: center;">誰が注文しますか？</p>
+    
     <% @avatars.each do |id, data| %>
-      <a href="/group/<%= @group_id %>/avatar/<%= id %>" class="avatar-card">
+      <a href="/table/<%= @table_id %>/avatar/<%= id %>" class="avatar-card">
         <%= data[:icon] %> <%= data[:name] %>
       </a>
     <% end %>
+    
+    <br>
+    <div style="text-align: center;">
+      <a href="/">← テーブル一覧に戻る</a>
+    </div>
   </div>
 </body>
 </html>
