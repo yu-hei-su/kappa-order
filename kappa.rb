@@ -101,3 +101,26 @@ post '/order' do
 
   redirect "/group/#{gid}/avatar/#{aid}"
 end
+
+# ---------------------------------------------------------
+# 5. お会計（リセット）処理
+# ---------------------------------------------------------
+post '/checkout' do
+ 
+  request.body.rewind 
+  raw_body = request.body.read
+  
+  my_data = {}
+  pairs = raw_body.split('&') 
+  pairs.each do |pair|
+    key_value = pair.split('=')
+    my_data[key_value[0]] = key_value[1]
+  end
+
+  gid = my_data["group_id"]
+
+ 
+  $orders[gid] = {}
+
+  redirect '/'
+end

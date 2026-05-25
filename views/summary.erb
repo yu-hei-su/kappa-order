@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,6 +20,10 @@
         <li style="font-size: 18px; margin-bottom: 10px;">
           <%= av[:icon] %> <%= av[:name] %>: <strong><%= sum %>円</strong>
         </li>
+	<% items.tally.each do |pid, count| %>
+          <div style="font-size: 14px; color: #666; margin-left: 20px; margin-bo           ttom: 5px;">
+            ・<%= @products[pid][:name] %> × <%= count %>個 （<%= @products[pid]               [:price] * count %>円）
+          </div>
       <% end %>
     </ul>
   </div>
