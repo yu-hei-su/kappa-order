@@ -2,11 +2,9 @@ require 'sinatra'
 require 'csv'
 
 set :bind, '0.0.0.0'
+# 注文データを入れる箱（テーブル ＞ アバター ＞ 商品）
 $orders = {}
 
-# ---------------------------------------------------------
-# 1. データの準備（CSV読み込み）
-# ---------------------------------------------------------
 helpers do
   def load_avatars
     avatars = {}
@@ -26,101 +24,82 @@ helpers do
 end
 
 # ---------------------------------------------------------
-# 2. トップページ
+# 1. トップページ（テーブル一覧）
 # ---------------------------------------------------------
-
 get '/' do
-  @qr_url = "#{request.base_url}/group/kappa_table"
-  erb :kappa 
+  @tables = (1..20).to_a
+  erb :index
 end
-# ---------------------------------------------------------
-# 3. URL解析と画面表示
-# ---------------------------------------------------------
-get '/group/*' do
-  path = request.path_info
-  parts = path.split('/') 
-  
-  @group_id  = parts[2]
-  sub_mode   = parts[3] # "avatar" か "summary" か
-  @avatar_id = parts[4] # "1" など
 
+# ---------------------------------------------------------
+# 2. アバター選択画面（指定したテーブル用）
+# ---------------------------------------------------------
+get '/table/:table_id' do
+  @table_id = params[:table_id]
+  @avatars = load_avatars
+  erb :avatar_select
+end
+
+# ---------------------------------------------------------
+# 3. 注文画面（指定テーブル ＞ 指定アバター）
+# ---------------------------------------------------------
+get '/table/:table_id/avatar/:avatar_id' do
+  @table_id = params[:table_id]
+  @avatar_id = params[:avatar_id]
   @avatars = load_avatars
   @products = load_products
 
-  # --- A. お会計まとめ画面 ---
-  if sub_mode == "summary"
-    @table_orders = $orders[@group_id] || {}
-    erb :summary
-
-  # --- B. 注文画面 ---
-  elsif sub_mode == "avatar" && @avatar_id != nil && @avatar_id != ""
-    @av = @avatars[@avatar_id]
-
-    if @av == nil
-      return "<h1>エラー：アバターが見つかりません🍣</h1><p>URLが間違っている可能性があります。</p><a href='/group/#{@group_id}'>テーブルに戻る</a>"
-    end
-
-    $orders[@group_id] ||= {}
-    $orders[@group_id][@avatar_id] ||= []
-
-    @my_total = 0
-    $orders[@group_id][@avatar_id].each { |pid| @my_total += @products[pid][:price] }
-
-    erb :order
-
-  # --- C. アバター選択画面 ---
-  else
-    erb :avatar_select
+  @av = @avatars[@avatar_id]
+  if @av == nil
+    return "<h1>エラー🍣</h1><a href='/table/#{@table_id}'>戻る</a>"
   end
+
+  # 箱の準備
+  $orders[@table_id] ||= {}
+  $orders[@table_id][@avatar_id] ||= []
+
+  # 個人の現在の合計
+  @my_total = 0
+  $orders[@table_id][@avatar_id].each { |pid| @my_total += @products[pid][:price] if @products[pid] }
+
+  erb :order
 end
 
 # ---------------------------------------------------------
-# 4. 注文を受け取る処理
+# 4. お会計まとめ画面（テーブル全体の確認）
+# ---------------------------------------------------------
+get '/table/:table_id/summary' do
+  @table_id = params[:table_id]
+  @avatars = load_avatars
+  @products = load_products
+  @table_orders = $orders[@table_id] || {}
+
+  erb :summary
+end
+
+# ---------------------------------------------------------
+# 5. 注文を受け取る処理
 # ---------------------------------------------------------
 post '/order' do
-  request.body.rewind 
-  raw_body = request.body.read
-  
-  my_data = {}
-  pairs = raw_body.split('&') 
-  
-  pairs.each do |pair|
-    key_value = pair.split('=')
-    key = key_value[0]
-    value = key_value[1]
-    my_data[key] = value
-  end
+  tid = params[:table_id]
+  aid = params[:avatar_id]
+  pid = params[:product_id]
 
-  gid = my_data["group_id"]
-  aid = my_data["avatar_id"]
-  pid = my_data["product_id"]
+  $orders[tid] ||= {}
+  $orders[tid][aid] ||= []
+  $orders[tid][aid] << pid
 
-  $orders[gid] ||= {}
-  $orders[gid][aid] ||= []
-  $orders[gid][aid] << pid
-
-  redirect "/group/#{gid}/avatar/#{aid}"
+  redirect "/table/#{tid}/avatar/#{aid}"
 end
 
 # ---------------------------------------------------------
-# 5. お会計（リセット）処理
+# 6. お会計（リセット）処理
 # ---------------------------------------------------------
 post '/checkout' do
- 
-  request.body.rewind 
-  raw_body = request.body.read
+  tid = params[:table_id]
   
-  my_data = {}
-  pairs = raw_body.split('&') 
-  pairs.each do |pair|
-    key_value = pair.split('=')
-    my_data[key_value[0]] = key_value[1]
-  end
-
-  gid = my_data["group_id"]
-
- 
-  $orders[gid] = {}
+  # 指定されたテーブルの中身だけをリセット
+  $orders[tid] = {}
 
   redirect '/'
 end

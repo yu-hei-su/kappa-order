@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/kappastyle.css">
+  <title>テーブル管理</title>
+</head>
+<body>
+  <div class="box" style="max-width: 600px;">
+    <h1>テーブル状況・QR発行</h1>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+      <% @tables.each do |t| %>
+        <a href="/table/<%= t %>" class="pc-button" style="width: 80px; padding: 15px; font-size: 16px;">
+          <%= t %>番卓
+        </a>
+      <% end %>
+    </div>
+  </div>
+</body>
+</html>

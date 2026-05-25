@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,20 +11,27 @@
   <div class="item">
     <ul>
       <% grand_total = 0 %>
+      
       <% @avatars.each do |id, av| %>
         <% items = @table_orders[id] || [] %>
         <% sum = 0 %>
         <% items.each { |pid| sum += @products[pid][:price] if @products[pid] } %>
         <% grand_total += sum %>
+        
         <li style="font-size: 18px; margin-bottom: 10px;">
           <%= av[:icon] %> <%= av[:name] %>: <strong><%= sum %>円</strong>
+          
+          <% items.tally.each do |pid, count| %>
+            <% p = @products[pid] %> <% if p %>
+              <div style="font-size: 14px; color: #666; margin-left: 20px; margin-bottom: 5px;">
+                ・<%= p[:name] %> × <%= count %>個 （<%= p[:price] * count %>円）
+              </div>
+            <% end %>
+          <% end %>
+          
         </li>
-	<% items.tally.each do |pid, count| %>
-          <div style="font-size: 14px; color: #666; margin-left: 20px; margin-bo           ttom: 5px;">
-            ・<%= @products[pid][:name] %> × <%= count %>個 （<%= @products[pid]               [:price] * count %>円）
-          </div>
-      <% end %>
-    </ul>
+      <% end %> 
+      </ul>
   </div>
   
   <h2 style="text-align: center; color: #e60012;">総合計: <%= grand_total %>円</h2>
