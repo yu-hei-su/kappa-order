@@ -4,54 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/kappastyle.css">
-  <title><%= @table_id %>番テーブル お会計</title>
+  <title>注文画面</title>
 </head>
 <body>
-  <h1><%= @table_id %>番テーブル お会計</h1>
-  <div class="item">
-    <ul style="padding: 0 10px;">
-      <% grand_total = 0 %>
-      
-      <% @avatars.each do |id, av| %>
-        <% items = @table_orders[id] || [] %>
-        <% sum = 0 %>
-        <% items.each { |pid| sum += @products[pid][:price] if @products[pid] } %>
-        <% grand_total += sum %>
-        
-        <li style="font-size: 18px; margin-bottom: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 10px;">
-          <%= av[:icon] %> <%= av[:name] %>: <strong><%= sum %>円</strong>
-          
-          <% items.tally.each do |pid, count| %>
-            <% p = @products[pid] %>
-            <% if p %>
-              <div style="font-size: 14px; color: #666; margin-left: 20px; margin-bottom: 5px;">
-                ・<%= p[:name] %> × <%= count %>個 （<%= p[:price] * count %>円）
-              </div>
-            <% end %>
-          <% end %>
-        </li>
-      <% end %>
+  <div style="text-align: center; color: #666; margin-bottom: 10px;"><%= @table_id %>番テーブル</div>
+  <h1><%= @av[:icon] %> <%= @av[:name] %>さんの注文</h1>
+  <h3 style="text-align: center; color: #009944;">現在の合計: <%= @my_total %>円</h3>
+  <hr>
 
-    </ul>
-  </div>
-  
-  <h2 style="text-align: center; color: #e60012; margin-top: 20px;">総合計: <%= grand_total %>円</h2>
-  
-  <div style="text-align: center; margin-top: 30px;">
-    <button onclick="history.back();" style="width: auto; padding: 10px 40px; background-color: #666; margin-bottom: 40px;">戻る</button>
-
-    <hr>
-
-    <form action="/checkout" method="POST" onsubmit="return confirm('<%= @table_id %>番テーブルのお会計を完了し、注文履歴をすべてリセットしますか？');" style="margin-top: 20px;">
-      <input type="hidden" name="table_id" value="<%= @table_id %>">
-      <button type="submit" style="background-color: #009944; color: white; border-radius: 5px; border: none; padding: 20px; font-size: 18px; cursor: pointer; width: 100%; font-weight: bold;">
-        お会計を完了
-      </button>
-    </form>
+  <form action="/order" method="POST">
+    <input type="hidden" name="table_id" value="<%= @table_id %>">
+    <input type="hidden" name="avatar_id" value="<%= @avatar_id %>">
     
-    <div style="margin-top: 20px;">
-      <a href="/">← テーブル一覧に戻る</a>
+    <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; justify-content: center;">
+      <% @products.each do |id, p| %>
+        <label style="border: 2px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; width: 130px; background-color: #fff;">
+          <img src="<%= p[:image] %>" width="110" height="110" style="border-radius: 5px; display: block; margin: 0 auto 10px;" alt="画像">
+          <input type="radio" name="product_id" value="<%= id %>" required> 
+          <strong><%= p[:name] %></strong><br>
+          <span style="color: #c0392b;"><%= p[:price] %>円</span>
+        </label>
+      <% end %>
     </div>
+
+    <button type="submit" style="font-size: 18px; padding: 15px;">注文する！</button>
+  </form>
+
+  <hr>
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="/table/<%= @table_id %>/summary" class="pc-button" style="display: inline-block; margin-bottom: 10px;">お会計まとめを見る</a><br>
+    <a href="/table/<%= @table_id %>">アバター選択に戻る</a>
   </div>
 </body>
 </html>
